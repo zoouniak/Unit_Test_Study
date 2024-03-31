@@ -3,6 +3,7 @@ package com.example.unitTestStudy.user.domain;
 import com.example.unitTestStudy.common.BaseEntity;
 import com.example.unitTestStudy.post.domain.Post;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode
 public class User extends BaseEntity {
 
@@ -31,6 +32,13 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
+
+    public User(Long id, String name, int age, String hobby) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.hobby = hobby;
+    }
 
     public User(String name, int age) {
         this.name = name;
