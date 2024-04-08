@@ -37,7 +37,6 @@ public class PostService {
 
     }
 
-    // todo exception code enum 추가
     @Transactional
     public Long save(PostCreateRequestDto postCreateRequestDto) {
         User user = userRepository.findById(postCreateRequestDto.getUserId())
@@ -62,7 +61,6 @@ public class PostService {
                 .map(postConverter::toPostResponseDto);
     }
 
-    // todo list dto로 바꿔보기
     @Transactional(readOnly = true)
     public Page<PostResponseDto> getAllPostsByUserId(Long userId, int page) {
         PageRequest pageRequest = PageRequest.of(page, PAGE_SIZE,

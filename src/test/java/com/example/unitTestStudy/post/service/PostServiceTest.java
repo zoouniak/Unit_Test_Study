@@ -1,5 +1,6 @@
 package com.example.unitTestStudy.post.service;
 
+import com.example.unitTestStudy.common.exception.ExceptionCode;
 import com.example.unitTestStudy.common.exception.NotFoundException;
 import com.example.unitTestStudy.post.converter.PostConverter;
 import com.example.unitTestStudy.post.domain.Post;
@@ -35,7 +36,6 @@ import static org.mockito.Mockito.when;
 class PostServiceTest {
     @InjectMocks
     private PostService sut;
-
     @Mock
     private UserRepository userRepository;
     @Mock
@@ -46,7 +46,9 @@ class PostServiceTest {
     @Test
     void 게시물을_저장한다() {
         PostCreateRequestDto req = createRequestDto();
+
         User user = createUser();
+
         given(userRepository.findById(req.getUserId())).willReturn(Optional.of(user));
         Post post = new Post(1L, "title", "content", user);
         given(postRepository.save(any())).willReturn(post);
@@ -54,7 +56,6 @@ class PostServiceTest {
         Long save = sut.save(req);
 
         Assertions.assertEquals(1L, save);
-
     }
 
     @Test
@@ -64,7 +65,7 @@ class PostServiceTest {
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> sut.save(req));
 
-        Assertions.assertEquals("사용자를 찾을 수 없습니다.", exception.getMessage());
+        Assertions.assertEquals(ExceptionCode.MEMBER_NOT_FOUND, exception.getCode());
     }
 
     private PostCreateRequestDto createRequestDto() {
@@ -90,7 +91,7 @@ class PostServiceTest {
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> sut.getPost(1L));
 
-        Assertions.assertEquals("게시물을 찾을 수 없습니다.", exception.getMessage());
+        Assertions.assertEquals(ExceptionCode.POST_NOT_FOUND, exception.getCode());
     }
 
     @Test
@@ -100,7 +101,7 @@ class PostServiceTest {
         posts.add(createPost(2L));
         Page<Post> pageOfPosts = new PageImpl<>(posts);
         int page = 1;
-        int pageSize = 5;
+        int pageSize = 10;
         when(postRepository.findAll(PageRequest.of(page, pageSize,
                 Sort.by(Sort.Direction.DESC, "createdAt")))).thenReturn(pageOfPosts);
 
@@ -133,7 +134,7 @@ class PostServiceTest {
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> sut.edit(req));
 
-        Assertions.assertEquals("게시물을 찾을 수 없습니다.", exception.getMessage());
+        Assertions.assertEquals(ExceptionCode.POST_NOT_FOUND, exception.getCode());
     }
 
     @Test
@@ -152,7 +153,7 @@ class PostServiceTest {
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> sut.deletePost(1L));
 
-        Assertions.assertEquals("게시물을 찾을 수 없습니다.", exception.getMessage());
+        Assertions.assertEquals(ExceptionCode.POST_NOT_FOUND, exception.getCode());
     }
 
     private static Post createPost(long id) {
